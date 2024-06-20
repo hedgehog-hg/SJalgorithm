@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+int main()
+{
+	int A,B,n,l,m,r,i;
+	char yn;
+	scanf("%d%d%d",&A,&B,&n);
+	getchar();
+	l = A;
+	r = B;
+	for(i=0;i<n;i++){
+		m = (l+r)/2;
+		scanf("%c",&yn);
+		if (yn == 'N'){
+			r = m;
+		}
+		else if (yn == 'Y'){
+			l = m+1;
+		}
+	}
+	printf("%d",(l+r)/2);
+	return 0;
+}

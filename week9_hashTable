@@ -1,0 +1,114 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+typedef struct bucket {
+	int ele;
+	struct bucket *next;
+}B;
+void print(B** h, int m) {
+	int i;
+	B *tmp;
+	for (i = 0; i < m; i++) {
+		if (h[i]->ele != 0) {
+			tmp = h[i];
+			while (tmp != NULL) {
+				printf(" %d", tmp->ele);
+				tmp = tmp->next;
+			}
+		}
+	}
+	printf("\n");
+}
+int main()
+{
+	int M, n,i,ind;
+	char ord;
+	B **b_arr, *newB=NULL, *tmp=NULL,*pre =NULL;
+	scanf("%d", &M);
+	getchar();
+	//init
+	b_arr = (B**)malloc(sizeof(B*)*M);
+	for (i = 0; i < M; i++) {
+		b_arr[i] = (B*)malloc(sizeof(B));
+		b_arr[i]->ele = 0;
+		b_arr[i]->next = NULL;
+		}
+	while (1) {
+		scanf("%c", &ord);
+		if (ord == 'e') break;
+		switch (ord) {
+		case'p':
+			print(b_arr, M);
+			break;
+		case'i':
+			scanf("%d", &n);
+			getchar();
+			ind = n % M;
+			
+			if (b_arr[ind]->ele == 0)
+			{
+				b_arr[ind]->ele = n;
+			}
+			else{
+				newB = (B*)malloc(sizeof(B));
+				newB->ele = b_arr[ind]->ele;
+				newB->next = b_arr[ind]->next;
+				b_arr[ind]->ele = n;
+				b_arr[ind]->next = newB;
+			}
+			break;
+		case's':
+			scanf("%d", &n);
+			getchar();
+			ind = n % M;
+
+			tmp = b_arr[ind];
+			for(i=1;tmp!=NULL;i++) {
+				if (tmp->ele == n) break;
+				tmp = tmp->next;
+			}
+			if (tmp == NULL) printf("0\n");
+			else printf("%d\n", i);
+			break;
+		case'd':
+			scanf("%d", &n);
+			getchar();
+			ind = n % M;
+
+			tmp = b_arr[ind];
+			for (i = 1; tmp != NULL; i++) {
+				if (tmp->ele == n) break;
+				pre = tmp;
+				tmp = tmp->next;
+			}
+			if (tmp == NULL) printf("0\n");
+			else { 
+				if (i == 1) //first element
+				{
+					if (tmp->next == NULL) {
+						tmp->ele = 0;
+					}
+					else {
+						while (tmp->next != NULL) {
+							pre = tmp;
+							tmp->ele = tmp->next->ele;
+							tmp = tmp->next;
+						}
+						pre->next = NULL;
+					}
+				}
+				else {
+					pre->next = tmp->next;
+					free(tmp);
+				}
+				
+				printf("%d\n", i);
+			}
+			break;
+		default:
+			break;
+		}
+	
+	}
+	return 0;
+}

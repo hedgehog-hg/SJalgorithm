@@ -1,0 +1,82 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#pragma warning (disable: 4996 )
+int sum(char *str, int z);
+int main()
+{
+	int n, i, z;
+	int h1, h2;
+
+	char str[10], ord;
+	char **bucket;
+	scanf("%d%d", &n, &z);
+	getchar();
+	bucket = (char**)malloc(sizeof(char*)*n);
+	for (i = 0; i < n; i++) {
+		bucket[i] = NULL;
+	}
+	while (1) {
+		scanf("%c", &ord);
+	
+		getchar();
+		if (ord == 'e') {
+			for (i = 0; i < n; i++) {
+				if (bucket[i] != NULL) free(bucket[i]);
+			}
+			free(bucket);
+			break;
+		}
+		switch (ord) {
+		case 'i':
+			scanf("%s", str);
+			getchar();
+			h1 = sum(str, z);
+			h2 = h1 % n;
+		
+			if (bucket[h2] != NULL) { 
+				printf("%d C\n", h2); }
+			else {
+				printf("%d\n", h2);
+			}
+			bucket[h2] = (char*)malloc(sizeof(char)*strlen(str));
+			strcpy(bucket[h2], str);
+			break;
+		case's':
+			scanf("%s", str);
+			getchar();
+			h1 = sum(str, z);
+			h2 = h1 % n;
+			if (bucket[h2] != NULL)
+			{
+				//printf("strcmp =%d %s %s\n", strcmp(str, bucket[h2]),str,bucket[h2]);
+				if (strcmp(str, bucket[h2]) == 0) {
+					printf("%d %s\n", h2, bucket[h2]);
+				}
+				else printf("-1\n");
+			}
+			else printf("-1\n");
+			
+			break;
+		case'p':
+			for (i = 0; i < n; i++) {
+				if (bucket[i] == NULL) printf("0\n");
+				else printf("%s\n", bucket[i]);
+			}
+			break;
+		default:
+			break;
+		}
+	}
+	return 0;
+}
+int sum(char *str, int z) {
+	int sum, Z,i;
+	
+	for (i = 0, sum = 0, Z = 1; i < strlen(str); i++) {
+		sum += (str[i] - 'a')*Z;
+		Z *= z;
+	}
+	return sum;
+	
+}

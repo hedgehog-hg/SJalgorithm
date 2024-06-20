@@ -1,0 +1,74 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#pragma warning(disable:4996)
+typedef struct binaryTree{
+	int ele;
+	struct binaryTree * left;
+	struct binaryTree * right;
+}BTree;
+BTree *Stack[100];
+int h = -1;
+BTree *createNode(){
+	BTree *p;
+	p = (BTree*)malloc(sizeof(BTree));
+	p->left = NULL;
+	p->right = NULL;
+	return p;
+}
+void push(BTree *node){
+	h++;
+	Stack[h] = node;
+}
+BTree* pop(){
+	return Stack[h--];
+}
+int main()
+{
+	int n,m,i,j,len,e,l,r;
+	char ord[100];
+	BTree *root,*tr;
+	
+	root = createNode();
+	tr = root;
+	scanf ("%d", &n);
+	for (i = 0 ; i < n ; i++){
+		scanf("%d%d%d",&e,&l,&r);
+		if (i == 0){// first root	
+			tr->ele = e;
+		}
+		else if (tr->left != NULL || tr->right != NULL) {
+			if (tr->left->ele == e ) tr=tr->left;
+			if (tr->right->ele == e) tr= tr->right;
+		}
+		
+		if ( l != 0 ) {tr->left = createNode(); tr->left->ele = l;}
+		if ( r != 0 ) {tr->right = createNode(); tr->right->ele  = r;}
+		
+		if ( r == 0 && l == 0 ) {
+			if (h != -1) tr=pop();}
+		else{
+			if (l != 0 && r != 0 ) push(tr);
+			if (l != 0 ) tr = tr->left;
+			else if (r != 0 ) tr = tr->right;
+		}
+	}
+	scanf("%d",&m);
+	
+	for(i=0;i<m;i++){
+		scanf("%s",ord);
+		tr = root;
+		printf(" %d",tr->ele);		
+		for(j=0,len=strlen(ord);j<len;j++){
+			if (ord[j] == 'L' ){
+				tr=tr->left;
+			}
+			else if (ord[j] == 'R'){
+				tr=tr->right;
+			}
+			printf(" %d",tr->ele);
+		}
+		printf("\n");
+	}
+	return 0;
+}

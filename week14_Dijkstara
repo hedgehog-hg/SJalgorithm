@@ -1,0 +1,106 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning (disable:4996)
+typedef struct graph {
+	struct vertex {
+		int d;
+	}*vlist; // vertex
+	int** adj; //adjacent matrix
+	int n; //vertex number
+	int m; // edge number
+}G;
+typedef struct vertex V;
+typedef struct Queue {
+	int* q;
+	int last;
+}queue;
+queue Q;
+int infinite = 30 * 1000;
+void DijkstraShortestPaths(G* g, int s);
+int isElement(int u);
+void downHeap(G* g, int ind);
+int removeMin();
+int main()
+{
+	int s;
+	int i, j,start,end,w;
+	G g;
+	scanf("%d%d%d", &g.n, &g.m, &s);
+	g.vlist = (V*)malloc(sizeof(V) * g.n);
+	g.adj = (int**)malloc(sizeof(int*)*g.n);
+	for (i = 0; i < g.n; i++) { 
+		g.adj[i] = (int*)malloc(sizeof(int) * g.n);
+		for (j = 0; j < g.n; j++) g.adj[i][j] = 0;
+	}
+	for (i = 0; i < g.m; i++) {
+		scanf("%d%d%d", &start, &end, &w);
+		g.adj[start - 1][end - 1] = w;
+		g.adj[end - 1][start - 1] = w;
+	}
+	DijkstraShortestPaths(&g, s);
+	for (i = 0; i < g.n; i++) {
+		if (i == s - 1) continue;
+		if (g.vlist[i].d != infinite) printf("%d %d\n", i + 1, g.vlist[i].d);
+	}
+}
+void DijkstraShortestPaths(G *g,int s) {
+	int i,u,j;
+	for (i = 0; i < g->n; i++) {
+		g->vlist[i].d = infinite;
+	}
+	g->vlist[s-1].d = 0;
+	Q.q = (int*)malloc(sizeof(int) * ((g->n)+1));
+	Q.q[1] = s - 1;
+	Q.last = g->n;
+	for (j=0,i = 2; i < Q.last + 1; i++,j++) {
+		if (j == s - 1) j++;
+		Q.q[i] = j;
+	}
+	while (Q.last) {
+		u = removeMin();
+		downHeap(g, 1);
+
+		for (i = 0; i < g->n; i++) {
+			if (g->adj[u][i] != 0) {
+				if (isElement(i) == 1) {
+					if (g->vlist[u].d + g->adj[u][i] < g->vlist[i].d) {
+						g->vlist[i].d = g->vlist[u].d + g->adj[u][i];
+						for (j = 1; j < Q.last + 1; j++) { 
+		                	downHeap(g, j);
+		                }
+					}
+				}
+			}
+		}
+
+	}
+}
+int isElement(int u) {
+	int i;
+	for (i = 1; i < Q.last+1; i++) {
+		if (Q.q[i] == u) return 1;
+	}
+	return 0;
+}
+void downHeap(G *g,int ind) {
+	int tmp = 0;
+	int small = ind * 2;
+	while (ind * 2 <= Q.last) {
+		small= ind * 2;
+		if (small + 1 <= Q.last) {
+			if (g->vlist[Q.q[small]].d > g->vlist[Q.q[small + 1]].d) small += 1;
+		}
+		if (g->vlist[Q.q[small]].d >= g->vlist[Q.q[ind]].d) break;
+		tmp = Q.q[ind];
+		Q.q[ind] = Q.q[small];
+		Q.q[small] = tmp;
+		ind = small;
+	}
+}
+int removeMin() {
+	int u;
+	u = Q.q[1];
+	Q.q[1] = Q.q[Q.last];
+	Q.last--;
+	return u;
+}

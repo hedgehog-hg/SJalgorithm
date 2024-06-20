@@ -1,0 +1,130 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+typedef struct linkedList {
+	int ele;
+	struct linkedList *next;
+}LS;
+typedef struct ListHead {
+	LS *header;
+}LH;
+void mergeSort(LS *header);
+void print(LS *header);
+LS *mg_part(LS *header,int k);
+LS *merge(LS *L1,LS *L2);
+LS *rMergeSort(LS *header,int n);
+int n;
+int main()
+{
+	int i;
+	LH *H;
+	LS *newNode, *pL = NULL;
+	H = (LH*)malloc(sizeof(LH)); //H head포인터를 갖고 있음
+
+
+	scanf("%d", &n);
+	//insert
+	for (i = 0; i < n; i++) {
+		newNode = (LS*)malloc(sizeof(LS));
+		newNode->next = NULL;
+		scanf("%d", &newNode->ele);
+
+		if (pL != NULL) {
+			pL->next = newNode;
+		}
+		else {
+			H->header = newNode;
+		}
+		pL = newNode;
+
+	}
+	mergeSort(H->header);
+}
+void mergeSort(LS *header){
+	header =rMergeSort(header,n);
+	print(header);
+}
+LS *rMergeSort(LS *header,int n){
+	int m=n/2;
+	LS *L1 = header, *L2 =NULL;
+	if (L1->next != NULL){
+		L2 = mg_part(L1,m);
+	}
+	if (n%2 != 0 ) m+=1;
+
+	if (n >=2) {
+		L1=rMergeSort(L1,n-m);
+		L2=rMergeSort(L2,m);
+		
+		header = merge(L1,L2);		
+	}
+
+	return header;
+}
+LS *merge(LS *L1, LS *L2){
+	LH H;
+	LS *p ;
+	H.header = NULL;
+	/*printf("Merge\n");
+	printf("L1 and L2 is %d %d\n",L1->ele,L2->ele);*/
+	if (L1->ele < L2->ele ){
+		//L2의 원소가 더 크면
+		H.header = L1;
+		L1=L1->next;
+	}
+	else if (L1->ele > L2->ele){
+		H.header = L2;
+		L2=L2->next;
+	}
+	//H.header->next = NULL;
+	p = H.header;
+	
+	while(L1 != NULL && L2 != NULL){
+		if (L1->ele < L2->ele ){
+		//L2의 원소가 더 크면
+			p->next = L1;
+			L1 = L1->next;
+		}
+		else{
+			p->next = L2;
+			L2=L2->next;
+		}
+		p = p->next;
+		//p->next=NULL;
+	}
+	while(L1 != NULL){
+		p->next = L1;
+		p=p->next;
+		//p->next = NULL;
+		L1=L1->next;
+	}
+	while(L2 != NULL){
+		p->next = L2;
+		p=p->next;
+		//p->next = NULL;
+		L2=L2->next;
+	}
+
+	return H.header;
+}
+LS* mg_part(LS *header, int k) {
+	//k만큼 나눠서 뒷부분을 반환하면 header는 반띵 반환된친구 반띵
+	LS *pL = header, *rL=pL;
+	int i;
+	
+	for (i = 0; i < k; i++) {
+		rL = pL;
+		pL = pL->next;
+	}
+	if (k == 1 && pL ==NULL) return rL;
+	rL->next = NULL;
+	return pL;
+}
+void print(LS *header) {
+	LS *p = header;
+	while (p != NULL) {
+		printf(" %d", p->ele);
+		p = p->next;
+	}
+}
+

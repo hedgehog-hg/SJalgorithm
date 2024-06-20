@@ -1,0 +1,68 @@
+#include<stdio.h>
+int H[100] = { 0 };
+int n = 0;
+void rBuildHeap(int ind);
+void BuildHeap();
+void upHeap(int ind);
+void downHeap(int ind);
+void print();
+int main()
+{
+	int  i;
+	scanf("%d", &n);
+	for (i = 0; i < n; i++) {
+		scanf("%d", &H[i+1]);
+	}
+	//BuildHeap();
+	rBuildHeap(1);
+
+	print();
+	return 0;
+}
+void rBuildHeap(int ind) {
+	//재귀
+	if (ind > n) return -1;
+	rBuildHeap(ind * 2);
+	rBuildHeap(ind * 2 + 1);
+	downHeap(ind);
+
+}
+void BuildHeap() {
+	//비재귀
+	int i;
+	for (i = n / 2; i > 0; i--) {
+		downHeap(i);
+	}
+}
+void upHeap(int ind) {
+	int tmp = 0;
+	while (ind > 1) {
+		if (H[ind / 2] > H[ind]) break;
+		tmp = H[ind];
+		H[ind] = H[ind / 2];
+		H[ind / 2] = tmp;
+		ind /= 2;
+	}
+}
+void downHeap(int ind) {
+	int tmp = 0;
+	int big = ind * 2;
+	while (ind * 2 <= n) {
+		big = ind * 2;
+		if (big + 1 <= n) {
+			if (H[big] < H[big + 1]) big += 1;
+		}
+		if (H[big] < H[ind]) break;
+		tmp = H[ind];
+		H[ind] = H[big];
+		H[big] = tmp;
+		ind = big;
+	}
+}
+void print() {
+	int i;
+	for (i = 0; i < n; i++) {
+		printf(" %d", H[i + 1]);
+	}
+	printf("\n");
+}

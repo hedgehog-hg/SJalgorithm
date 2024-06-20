@@ -1,0 +1,144 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning (disable: 4996)
+typedef struct listADT {
+	char ele;
+	struct listADT *prev;
+	struct listADT *next;
+}ADT;
+ADT* makeNode() {
+	ADT *node;
+	node = (ADT*)malloc(sizeof(ADT));
+	node->next = NULL;
+	node->prev = NULL;
+	return node;
+}
+int isEmpty(ADT *H);
+void add(ADT *H,int r, char ele);
+void del(ADT *H,int r);
+char get(ADT *H, int r);
+void print(ADT *H);
+int main() {
+	int n, r,i;
+	char val,ord;
+	ADT *H, *T;
+	H = makeNode();
+	T = makeNode();
+	H->next = T;
+	T->prev = H;
+
+	scanf("%d", &n);
+	getchar();
+
+	for (i = 0; i < n; i++) {
+		scanf("%c", &ord);
+		getchar();
+		switch (ord) {
+		case 'A':
+			scanf("%d %c", &r, &val);
+			getchar();
+			add(H,r,val);
+			break;
+		case 'D':
+			scanf("%d", &r);
+			getchar();
+			del(H, r);
+			break;
+		case 'G':
+			scanf("%d", &r);
+			getchar();
+			val = get(H, r);
+			if (val != '0') printf("%c\n", val);
+			break;
+		case 'P':
+			print(H);
+			printf("\n");
+			break;
+		default:
+			break;
+		}
+	}
+
+	return 0;
+}
+void add(ADT *H, int r, char e) {
+	ADT *ph = H,*newNode;
+	int i;
+	newNode = makeNode();
+	newNode->ele = e;
+	if (r == 1) {
+		newNode->prev = H;
+		newNode->next = H->next;
+		H->next = newNode;
+		newNode->next->prev = newNode;
+	}
+	else {
+		for (i = 1; i < r; i++) {
+			if (ph->next == NULL) break;
+			ph = ph->next;
+		}
+		if (ph->next == NULL) {//잘못된 순위
+			printf("invalid position\n");
+		}
+		else {
+			newNode->prev = ph;
+			newNode->next = ph->next;
+			ph->next->prev = newNode;
+			ph->next = newNode;
+			
+		}
+	}
+}
+void del(ADT *H, int r) {
+	ADT *ph = H,*old = NULL;
+	int i;
+	if (isEmpty(H)) {
+		printf("invalid position\n");
+	}
+	else {
+		for (i = 0; i < r; i++) {
+			if (ph->next == NULL) break; //T
+			ph = ph->next;
+		}
+		if (ph->next == NULL) {
+			printf("invalid position\n");
+		}
+		else {
+			ph->next->prev = ph->prev;
+			ph->prev->next = ph->next;
+			free(ph);
+		}
+	}
+}
+char get(ADT *H, int r) {
+	ADT *ph = H;
+	int i;
+	if (isEmpty(H)) { //빈 리스트
+		printf("invalid position\n");
+	}
+	else {
+		for (i = 0; i < r; i++) {
+			if (ph->next == NULL) break; //T
+			ph = ph->next;
+		}
+		if (ph->next == NULL) { //잘못된 순위
+			printf("invalid position\n");
+		}
+		else {
+			return ph->ele;
+		}
+	}
+	return '0';
+}
+void print(ADT *H) {
+	ADT *ph = H->next;
+	//빈 리스트면 ph->next가 null
+	while (ph->next) {
+		printf("%c", ph->ele);
+		ph = ph->next;
+	}
+}
+int isEmpty(ADT *H) {
+	if (H->next->next == NULL) return 1;
+	else return 0;
+}

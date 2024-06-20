@@ -1,0 +1,52 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning (disable: 4996)
+/* score : 60/100 */
+typedef struct things {
+	int w; //weight
+	int v; //value
+	int pv;
+}T;
+int main()
+{
+	int lim, num,maxind;
+	int i,j,total=0;
+	T *t,tmp;
+
+	scanf("%d%d", &lim, &num);
+	t = (T*)malloc(sizeof(T) * num);
+
+	for (i = 0; i < num; i++) {
+		scanf("%d%d", &t[i].w, &t[i].v);
+		t[i].pv = t[i].v / t[i].w;
+	}
+	for (i = 0; i < num; i++) {
+		maxind = i;
+		for (j = i + 1; j < num; j++) {
+			if (t[maxind].pv < t[j].pv) maxind = j;
+		}
+		if (maxind != i) {
+		tmp = t[maxind];
+		t[maxind] = t[i];
+		t[i] = tmp;
+		}
+	}
+
+	i = 0;
+	while (lim != 0) {
+		if (t[i].w < lim) {
+			total += t[i].v;
+			lim -= t[i].w;
+		}
+		else {
+			total += t[i].pv * lim;
+			lim -= lim;
+			break;
+		}
+		i++;
+	}
+	printf("%d\n", total);
+	free(t);
+
+	return 0;
+}

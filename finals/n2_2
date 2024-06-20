@@ -1,0 +1,52 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning (disable: 4996)
+#define infinite 30000
+typedef struct graph {
+	int n;
+	int m;
+	int** adj;
+}G;
+int main()
+{
+	G g;
+	int i, j,k, start, end, w;
+	scanf("%d%d", &g.n, &g.m);
+	g.adj = (int**)malloc(sizeof(int*) * g.n);
+	for (i = 0; i < g.n; i++) {
+		g.adj[i] = (int*)malloc(sizeof(int) * g.n);
+		for (j = 0; j < g.n; j++) { 
+			if (i == j) g.adj[i][j] = 0;
+			else g.adj[i][j] = infinite; }
+	}
+	for (i = 0; i < g.m; i++) {
+		scanf("%d%d%d", &start, &end, &w);
+		g.adj[start - 1][end - 1] = w;
+	}
+
+	for (k = 0; k < g.n; k++) {
+		for (i = 0; i < g.n; i++) {
+			if (i == k) continue;
+			for (j = 0; j < g.n; j++) {
+				if (j == i || j == k) continue;
+				if (g.adj[i][k] != infinite && g.adj[k][j] != infinite) {
+					if (g.adj[i][j] > g.adj[i][k] + g.adj[k][j]) {
+						g.adj[i][j] = g.adj[i][k] + g.adj[k][j];
+					}
+				}
+			}
+		}
+	}
+	for (i = 0; i < g.n; i++) {
+		for (j = 0; j < g.n; j++) {
+			if (g.adj[i][j] == infinite) printf(" *");
+			else printf(" %d", g.adj[i][j]);
+		}
+		printf("\n");
+	}
+
+	for (i = 0; i < g.n; i++) free(g.adj[i]);
+	free(g.adj);
+
+	return 0;
+}

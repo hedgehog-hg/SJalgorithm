@@ -1,0 +1,95 @@
+#include<stdio.h>
+#pragma warning (disable:4996)
+
+int heap[100];
+int n;
+void inPlaceHeapSort();
+void printArray();
+void BuildHeap();
+int removeMax();
+void upHeap(int ind);
+void downHeap(int ind);
+int main()
+{
+	int i;
+	scanf("%d", &n);
+	for (i = 0; i < n; i++)	scanf("%d", &heap[1 + i]);
+
+	inPlaceHeapSort();
+	printArray();
+
+	return 0;
+}
+void inPlaceHeapSort() {
+	int tmp , i, N = n;
+	BuildHeap();
+
+	for (i = n; i > 0; i--) {
+		tmp = removeMax();
+		n--;
+		heap[i] = tmp;
+
+	}
+	n = N;
+}
+void BuildHeap() {
+	//비재귀
+	int i;
+	for (i = n / 2; i > 0; i--) {
+		downHeap(i);
+	}
+}
+void printArray() {
+	int i;
+	for (i = 0; i < n; i++) printf("%d ", heap[i + 1]);
+}
+int removeMax() {
+	int res = heap[1];
+	//downHeap
+	heap[1] = heap[n];
+	downHeap(1);
+
+	return res;
+}
+void upHeap(int ind) {
+	int tmp = 0;
+	while (ind > 1) {
+		if (heap[ind / 2] > heap[ind]) break;
+		tmp = heap[ind];
+		heap[ind] = heap[ind / 2];
+		heap[ind / 2] = tmp;
+		ind /= 2;
+	}
+}
+/*void downHeap(int ind) {
+
+	int tmp = 0;
+	int big = ind * 2;
+	
+	big = ind * 2;
+	if (big + 1 <= n) {
+		if (heap[big] < heap[big + 1]) big += 1;
+	}
+	if (heap[big] < heap[ind]) return;
+	tmp = heap[ind];
+	heap[ind] = heap[big];
+	heap[big] = tmp;
+
+	
+}
+*/
+void downHeap(int ind) {
+	int tmp = 0;
+	int big = ind * 2;
+	while (ind * 2 <=n) {
+		big = ind * 2;
+		if (big + 1 <= n) {
+			if (heap[big] < heap[big + 1]) big += 1;
+		}
+		if (heap[big] < heap[ind]) break;
+		tmp = heap[ind];
+		heap[ind] = heap[big];
+		heap[big] = tmp;
+		ind = big;
+	}
+}

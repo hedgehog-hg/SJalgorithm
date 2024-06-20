@@ -1,0 +1,80 @@
+#include<stdio.h>
+#pragma warning(disable:4996)
+int H[100] = { 0 };
+int n=0;
+void insertItem(int k);
+int removeMax();
+void upHeap(int ind);
+void downHeap(int ind);
+void print();
+int main()
+{
+	char ord = '0';
+	int k;
+
+	while (ord != 'q') {
+		scanf("%c", &ord);
+		switch (ord) {
+		case'i':
+			scanf("%d", &k);
+			getchar();
+			insertItem(k);
+			printf("0\n");
+			break;
+		case'd':
+			printf("%d\n", removeMax());
+			break;
+		case'p':
+			print();
+			break;
+		default:break;
+		}
+	}
+	return 0;
+}
+void insertItem(int k){
+	H[n + 1] = k;
+	//upHeap
+	upHeap(n + 1);
+	n++;
+}
+int removeMax() {
+	int res = H[1];
+	//downHeap
+	H[1] = H[n];
+	downHeap(1);
+	n--;
+	return res;
+}
+void upHeap(int ind) {
+	int tmp = 0;
+	while (ind > 1) {
+		if (H[ind / 2] > H[ind]) break;
+		tmp = H[ind];
+		H[ind] = H[ind / 2];
+		H[ind / 2] = tmp;
+		ind /= 2;
+	}
+}
+void downHeap(int ind) {
+	int tmp = 0;
+	int big = ind * 2;
+	while (ind * 2 < n) {
+		big = ind * 2;
+		if (big + 1 <= n) {
+			if (H[big] < H[big + 1]) big += 1;
+		}
+		if (H[big] < H[ind]) break;
+		tmp = H[ind];
+		H[ind] = H[big];
+		H[big] = tmp;
+		ind = big;
+	}
+}
+void print() {
+	int i;
+	for (i = 0; i < n; i++) {
+		printf(" %d", H[i + 1]);
+	}
+	printf("\n");
+}

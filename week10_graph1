@@ -1,0 +1,267 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+/* score : 40/100 */
+typedef struct adj{
+	int ind;
+	struct adj *next;
+}adj;
+typedef struct vertex {
+	adj *head;
+}vertex;
+typedef struct edge {
+	int start;
+	int end;
+	int weight;
+}E;
+int main()
+{
+	vertex V[6]; //ind+1로 구분 
+	E egs[21];
+	adj *tj,*tmp,*pre;
+	char ord;
+	int a, b, w,swap,num=8,i,j;
+	
+	//init edges
+	egs[0].start = 0;
+	egs[1].start = 0;
+	egs[2].start = 0;
+	egs[3].start = 0;
+	egs[0].end = 1;
+	egs[1].end = 2;
+	egs[2].end = 3;
+	egs[3].end = 5;
+	egs[0].weight=1;
+	egs[1].weight=1;
+	egs[2].weight=1;
+	egs[3].weight=2;
+
+	egs[4].start = 1;
+	egs[4].end = 2;
+	egs[4].weight = 1;
+
+	egs[5].start = 2;
+	egs[5].end = 4;
+	egs[5].weight = 4;
+
+	egs[6].start = 4;
+	egs[6].end = 4;
+	egs[6].weight = 4;
+	egs[7].start = 4;
+	egs[7].end = 5;
+	egs[7].weight = 3;
+	
+	//init vertex
+	tj = (adj*)malloc(sizeof(adj));
+	V[0].head = tj;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 0;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 1;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 2;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 3;
+	tj->next = NULL;
+	tj = NULL;
+
+	tj = (adj*)malloc(sizeof(adj));
+	V[1].head = tj;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 0;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 4;
+	tj->next = NULL;
+	tj = (adj*)malloc(sizeof(adj));
+	
+	V[2].head = tj;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 1;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 4;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 5;
+	tj->next = NULL;
+	tj = NULL;
+
+	tj = (adj*)malloc(sizeof(adj));
+	V[3].head = tj;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 2;
+	tj->next = NULL;
+	tj = NULL;
+
+	tj = (adj*)malloc(sizeof(adj));
+	V[4].head = tj;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 5;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 6;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 7;
+	tj->next = NULL;
+	tj = NULL;
+		
+	tj = (adj*)malloc(sizeof(adj));
+	V[5].head = tj;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 3;
+	tj->next = (adj*)malloc(sizeof(adj));
+	tj = tj->next;
+	tj->ind = 7;
+	tj->next = NULL;
+	tj = NULL;
+	
+	while (1) {
+		scanf("%c", &ord);
+		if (ord == 'q') break;
+		else if (ord == 'a') {
+			scanf("%d", &a);
+			if (a < 1 || a > 6) printf("-1\n");
+			else {
+				tj = V[a - 1].head->next;
+				while (tj != NULL) {
+					if (egs[tj->ind].start == a - 1) printf(" %d", egs[tj->ind].end+1);
+					else printf(" %d", egs[tj->ind].start+1);
+					printf(" %d", egs[tj->ind].weight);
+					tj = tj->next;
+				}
+				printf ("\n");
+			}
+		}
+		else if (ord == 'm') {
+			scanf("%d%d%d", &a, &b, &w);
+			if ((a < 1 || a>6) || (b < 1 || b>6)) printf("-1\n");
+			else {
+				if (a > b) { swap = a; a = b; b = swap; }
+				tj = V[a - 1].head->next;
+
+				while (tj != NULL) {
+					if (egs[tj->ind].end == b - 1) break;
+					tj = tj->next;
+				}
+				if (tj == NULL && num <= 21) //생성
+				{
+					if (w != 0) {
+						for (i = num - 1; i >= 0; i--) {
+							if ((egs[i].start == a - 1 && egs[i].end < b - 1) ||
+								(egs[i].start < a - 1)) break;
+							egs[i + 1].start = egs[i].start;
+							egs[i + 1].end = egs[i].end;
+							egs[i + 1].weight = egs[i].weight;
+						}
+						i++;
+						egs[i].start = a - 1;
+						egs[i].end = b - 1;
+						egs[i].weight = w;
+						num++;
+						//for (i = 0; i < num; i++) printf("%d %d %d\n", egs[i].start+1, egs[i].end+1, egs[i].weight);
+						for(j=0;j<6;j++)
+						{
+							tmp = V[j].head->next;
+							while (tmp != NULL) {
+								if (tmp->ind >= i) tmp->ind++;
+								tmp = tmp->next;
+							}
+						}
+						//a adj에서 추가
+						pre = V[a - 1].head;
+						tmp = V[a - 1].head->next;
+						while (tmp != NULL) {
+							if (egs[tmp->ind].end > b - 1) break;
+							pre = tmp;
+							tmp = tmp->next;
+						}
+						pre->next = (adj*)malloc(sizeof(adj));
+						pre = pre->next;
+						pre->ind = i;
+						pre->next = tmp;
+
+						//b adj에서 추가
+						pre = V[b - 1].head;
+						tmp = V[b - 1].head->next;
+						while (tmp != NULL) {
+							if (egs[tmp->ind].end > b - 1) break;
+							pre = tmp;
+							tmp = tmp->next;
+						}
+						pre->next = (adj*)malloc(sizeof(adj));
+						pre = pre->next;
+						pre->ind = i;
+						pre->next = tmp;
+					}
+				}
+				else 
+				{
+					if (w == 0) //삭제
+					{
+						pre = V[a - 1].head;
+						tmp = V[a - 1].head->next;
+						while (tmp != NULL) {
+							if (egs[tmp->ind].end == b - 1) break;
+							pre = tmp;
+							tmp = tmp->next;
+						}
+						
+						pre->next = tmp->next;
+						free(tmp);
+
+						//b adj에서 삭제
+						pre = V[b - 1].head;
+						tmp = V[b - 1].head->next;
+						while (tmp != NULL) {
+							if (egs[tmp->ind].start == a - 1) break;
+							//printf("%d %d",tmp->ind,egs[tmp->ind].start);
+							pre = tmp;
+							tmp = tmp->next;
+						}
+						pre->next = tmp->next;
+						free(tmp);
+						
+						//edge에서 삭제
+						for (i = 0; i < num; i++)
+						{
+							if (egs[i].start == a - 1 && egs[i].end == b - 1) break;
+						}
+						num--;
+						for (j = 0; j < 6; j++) {
+							tmp = V[j].head->next;
+							while (tmp != NULL) {
+								if (tmp->ind > i) tmp->ind--;
+								tmp = tmp->next;
+							}
+						}
+						for (; i < num; i++) {
+							egs[i].start = egs[i + 1].start;
+							egs[i].end = egs[i + 1].end;
+							egs[i].weight = egs[i+1].weight;
+						}
+						
+						
+					}
+					else //교체 
+					{
+						egs[tj->ind].weight = w;
+					}
+				}
+			}
+			//for (i = 0; i < num; i++) printf("%d %d %d %d\n", i,egs[i].start + 1, egs[i].end + 1, egs[i].weight);
+		}
+		getchar();
+	}
+	return 0;
+}

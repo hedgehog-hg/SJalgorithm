@@ -1,0 +1,108 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#pragma warning(disable:4996)
+
+int *maxH, *minH;
+int n;
+void makeMaxHeap();
+void makeMinHeap();
+void BuildHeap();
+void BuildHeapM();
+void downHeap(int ind);
+void downHeapM(int ind);
+void print(int *heap);
+void delMaxandMin();
+int main()
+{
+	int i;
+	
+	scanf("%d", &n);
+	
+	maxH = (int*)malloc(sizeof(int)*(n + 1));
+	minH = (int*)malloc(sizeof(int)*(n + 1));
+
+	for (i = 0; i < n; i++) {
+		scanf("%d", maxH + i + 1);
+		minH[i + 1] = maxH[i + 1];
+	}
+	makeMaxHeap();
+	makeMinHeap();
+	delMaxandMin();
+	return 0;
+}
+void makeMaxHeap() {
+	BuildHeap();
+}
+void makeMinHeap() {
+	BuildHeapM();
+}
+void delMaxandMin() {
+	
+	int i,tmp;
+	int k = n;
+	for (i = 1; i < k+1; i++) {
+		print(maxH);
+		print(minH);
+		printf("%d %d\n", maxH[1], minH[1]);
+		tmp = maxH[1];
+		maxH[1] = maxH[n];
+		maxH[n] = tmp;
+
+		tmp = minH[1];
+		minH[1] = minH[n];
+		minH[n] = tmp;
+		n--;
+		makeMaxHeap();
+		makeMinHeap();
+	}
+}
+
+void BuildHeap() {
+	int i;
+	for (i = n / 2; i > 0; i--) {
+		downHeap(i);
+	}
+}
+void BuildHeapM() {
+	int i;
+	for (i = n / 2; i > 0; i--) {
+		downHeapM(i);
+	}
+}
+void downHeap(int ind) {
+	int tmp = 0;
+	int big = ind * 2;
+	while (ind * 2 <= n) {
+		big = ind * 2;
+		if (big + 1 <= n) {
+			if (maxH[big] < maxH[big + 1]) big += 1;
+		}
+		if (maxH[big] < maxH[ind]) break;
+		tmp = maxH[ind];
+		maxH[ind] = maxH[big];
+		maxH[big] = tmp;
+		ind = big;
+	}
+}
+void downHeapM(int ind) {
+	int tmp = 0;
+	int small = 0;
+	while (ind * 2 <= n) {
+		small = ind * 2;
+		if (small + 1 <= n) {
+			if (minH[small] > minH[small + 1]) small += 1;
+		}if (minH[small] > minH[ind]) break;
+		tmp = minH[ind];
+		minH[ind] = minH[small];
+		minH[small] = tmp;
+		ind = small;
+	}
+}
+void print(int *heap) {
+	int i;
+	for (i = 1; i < n+1; i++) {
+		printf(" %d", heap[i]);
+	}
+	printf("\n");
+}

@@ -1,0 +1,34 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+void print(int *arr, int n);
+void insertSort(int *arr, int n);
+int main()
+{
+	int n,i;
+	int *arry=NULL;
+
+	scanf("%d", &n);
+	arry = (int*)malloc(sizeof(int)*n);
+	for (i = 0; i < n; i++) scanf("%d", arry + i);
+	
+	insertSort(arry, n);
+	print(arry, n);
+	return 0;
+}
+void print(int *arr, int n) {
+	int i;
+	for (i = 0; i < n; i++) printf(" %d", arr[i]);
+}
+void insertSort(int *arr, int n) {
+	int i,j,tmp;
+	for (i = 1; i < n; i++) {
+		j = i - 1;
+		tmp = arr[i];
+		while (j >= 0 && arr[j] > tmp) {
+			arr[j + 1] = arr[j];
+			j--;
+		}
+		if (j != i - 1) arr[j + 1] = tmp;
+	}
+}

@@ -1,0 +1,59 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+#define infinite 30000
+typedef struct graph {
+	int* dV;
+	struct edges {
+		int ori;
+		int des;
+		int w;
+	}*elist;
+	int n;
+	int m;
+}G;
+void BellmanFordShortestPaths(G* g, int s);
+int minimum(int x, int y);
+int main()
+{
+	int  i,s,start,end;
+	G g;
+	scanf("%d%d%d", &g.n, &g.m, &s);
+	g.dV = (int*)malloc(sizeof(int) * g.n);
+	g.elist = (struct edges*)malloc(sizeof(struct edges) * g.m);
+	
+	for (i = 0; i < g.m; i++) {
+		scanf("%d%d%d", &start,&end, &g.elist[i].w);
+		g.elist[i].ori = start - 1;
+		g.elist[i].des = end - 1;
+	}
+
+	BellmanFordShortestPaths(&g, s);
+	for (i = 0; i < g.n; i++) {
+		if (i == s - 1) continue;
+		if (g.dV[i] <=20000) printf("%d %d\n", i + 1, g.dV[i]);
+	}
+	return 0;
+}
+void BellmanFordShortestPaths(G* g, int s) {
+	int i,j,u,z;
+	for(i =0;i<g->n;i++){
+		g->dV[i] = infinite;
+	}
+	g->dV[s - 1] = 0;
+	
+	for (i = 0; i < g->n; i++) {
+		
+		for (j = 0; j < g->m; j++) {
+			u = g->elist[j].ori;
+			z = g->elist[j].des;
+
+			g->dV[z] = minimum(g->dV[z], g->dV[u] + g->elist[j].w);
+		}
+		
+	}
+}
+int minimum(int x, int y) {
+	if (x > y) return y;
+	else return x;
+}

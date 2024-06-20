@@ -1,0 +1,192 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+/* score : 60/100 */
+typedef struct node{
+	struct node *Lc;
+	struct node *parent;
+	struct node *Rc;
+	int key;
+}Node;
+int findElement(int s, Node *h);
+Node* insertItem(int s,Node *h);
+Node* treeSearch(int s, Node *h);
+void removeElement(int s,Node *h);
+int isExternal(Node *n);
+Node* inOrderSucc(Node *r);
+Node* sibling (Node *w);
+void print(Node *root);
+int main()
+{
+	char ord;
+	int n;
+	Node *root=NULL;
+
+	while(1){
+		scanf("%c",&ord);
+		if (ord == 'q' ) break;
+		switch(ord){
+		case 'i':
+			scanf("%d",&n);
+			root = insertItem(n,root);
+			break;
+		case 'd': 
+			scanf("%d",&n);
+			removeElement(n,root);
+			break;
+		case's': 
+			scanf("%d",&n);
+			n = findElement(n,root);
+			if (n!= -1) printf("%d\n",n);
+			else printf("X\n");
+			break;
+		case'p':
+			print(root);
+			printf("\n");
+			break;
+		default: break;
+		}
+		getchar();
+	}
+	return 0;
+}
+int findElement(int s, Node *h){
+	Node *tmp=h;
+	while(tmp != NULL) {
+		if (tmp->key < s ) {
+			tmp = tmp->Rc;
+		}
+		else if (tmp-> key > s ) {
+			tmp = tmp->Lc;
+		}
+		else {
+			return tmp->key;
+		}
+	}
+	return -1;
+}
+Node* insertItem(int s,Node *h){
+	Node *newNode;
+	Node *loc=NULL;
+	if (h == NULL) {
+		h = (Node*)malloc(sizeof(Node));
+		h->Lc = NULL;
+		h->Rc = NULL;
+		h->parent = NULL;
+		h->key = s;
+	}
+	else{
+		newNode= (Node*)malloc(sizeof(Node));
+		newNode->Lc = NULL;
+		newNode->Rc = NULL;
+		newNode->key = s;
+		newNode->parent = h;
+		loc = h;
+		while(loc!=NULL){
+			newNode->parent = loc;
+			if (loc->key > s){
+				loc = loc->Lc;
+			}
+			else if (loc->key < s) {
+				loc = loc->Rc;
+			}
+		}
+	/*if (newNode->parent == NULL) {
+		printf("First Node\n");
+		h = newNode;
+		printf("%d\n",h->key);
+	}
+	else*/
+		if(newNode->parent->key < s ){
+			newNode->parent->Rc = newNode;
+		}
+		else if (newNode->parent->key > s)
+		{
+			newNode->parent->Lc = newNode;
+		}
+	}
+	return h;
+}
+Node* treeSearch(int s, Node *h){
+	Node *tmp = h;
+	while(tmp!=NULL){
+		if (tmp->key > s ){
+			tmp = tmp->Lc;
+		}
+		else if (tmp->key < s ){
+			tmp = tmp->Rc;
+		}
+		else if (tmp->key == s) {
+			break;
+		}
+	}
+	return tmp;
+}
+void removeElement(int s,Node *h){
+	Node *z=NULL,*y = NULL, *zs=NULL, *pord=NULL, *g ;
+
+	y = treeSearch(s,h);
+
+	if (y == NULL ) printf("X\n"); // 없는 키면 X출력
+	else{ //있는 키일경우
+		
+		z=y->Lc;
+		zs = y->Rc;
+		if (!isExternal(z)) {
+
+			z = y->Rc;
+			zs = y->Lc;
+		}
+		if (y->parent == NULL) //y가 루트일때
+		{
+			h = zs;
+			zs->parent = NULL;
+		}
+		else if (zs != NULL && z != NULL) //자식이 둘일때
+		{
+			pord = inOrderSucc(y);
+			y->key = pord->key;
+			pord->Rc->parent=pord->parent;
+			pord->parent ->Lc = pord->Rc;
+			free(pord);
+		}
+		else{
+			g = y->parent;
+			if (zs != NULL ) zs->parent = g;
+			if (y->parent->Lc == y) //left child
+			{
+				g->Lc = zs;
+			}
+			else{ //right child
+				g->Rc =zs;
+			}
+			free(y);
+		}
+		printf("%d\n",s);
+	}
+}
+Node* sibling(Node *w){
+	if (w->parent == NULL) return NULL;
+	else if (w->parent->Lc == w) return w->parent->Rc;
+	else return w->parent->Lc;
+}
+int isExternal(Node *n){
+	
+	if (n == NULL){
+		return 1;
+	}
+	else return 0;
+}
+Node* inOrderSucc(Node *w){
+	Node *succ=w->Rc;
+	while(succ->Lc !=NULL){
+		succ=succ->Lc;
+	}
+	return succ;
+}
+void print(Node *root){
+	if (root == NULL) return;
+	printf(" %d",root->key);
+	print(root->Lc);
+	print(root->Rc);
+}

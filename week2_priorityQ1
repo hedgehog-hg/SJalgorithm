@@ -1,0 +1,24 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+int main()
+{
+	int n,i,j;
+	int tmp,max_ind=0;
+	int *arry=NULL;
+
+	scanf("%d", &n);
+	arry = (int*)malloc(sizeof(int)*n);
+	for (i = 0; i < n; i++) scanf("%d", arry + i);
+	//sorting
+	for (i = 0; i < n - 1; i++) {
+		for (j = 1, max_ind = 0; j < n - i; j++) {
+			if (arry[max_ind] < arry[j]) max_ind = j;
+		}
+		tmp = arry[max_ind];
+		arry[max_ind] = arry[n-i-1];
+		arry[n - i - 1] = tmp;
+	}
+	for (i = 0; i < n ; i++) printf(" %d", arry[i]);
+	return 0;
+}

@@ -1,0 +1,29 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+int *dic;
+int N,k;
+int find_loc(int l, int r, int m);
+int main()
+{
+	int i;
+	
+	scanf("%d%d", &N,&k);
+	dic = (int*)malloc(sizeof(int)*N);
+	
+	for (i = 0; i < N; i++) {
+		scanf("%d", &dic[i]);
+	}
+	printf("%d", find_loc(0, N - 1, (N - 1) / 2));
+	return 0;
+}
+int find_loc(int l, int r, int m) {
+	if (l > r) return r;
+	if (dic[m] == k) return m;
+	else if (dic[m] < k) {
+		find_loc(m + 1, r, (m + r + 1) / 2);
+	}
+	else if (dic[m] > k) {
+		find_loc(l,m-1,(l+m-1)/2);
+	}
+}

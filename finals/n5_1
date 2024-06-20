@@ -1,0 +1,198 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning(disable:4996)
+/* score : 70/100 */
+typedef struct edge {
+	int start;
+	int end;
+}edge;
+typedef struct vertex {
+	char name;
+	int in;
+	struct incidence {
+		int ind;
+		struct incidence *next;
+	}*inhead,*outhead;
+}Ver;
+typedef struct graph{
+	Ver *arrv;
+	edge *arre;
+}G;
+typedef struct incidence inc;
+int n, m;
+int *Q;
+int front=0, rear=0;
+int *topOrder;
+G g;
+void buildGraph();
+void insertVertex(char vname, int ind);
+void insertDirectedEdge(char uname, char wname, int ind);
+int index(char vname);
+void addFirst(inc *head, int ind);
+void topologicalSort();
+int isEmpty();
+void enqueue(int v);
+int dequeue();
+void finish();
+int main(){
+	int i;
+	buildGraph();
+	//printf("build Graph is finished\n");
+	topologicalSort();
+	//printf("topological sort is finished\n");
+	if (topOrder[0] == 0) { printf("-1"); }
+	else {
+		for (i = 0; i < n; i++) {
+			printf("%c ", g.arrv[topOrder[i+1]].name);
+		}
+	}
+	//run time error
+	//finish();
+	return 0;
+}
+void buildGraph() {
+	int i;
+	char ch,in,out;
+	scanf("%d %d", &n,&m);
+	getchar();
+	
+	g.arrv = (Ver*)malloc(sizeof(Ver)*n);
+	for (i = 0; i < n; i++) {
+		scanf("%c", &ch);
+		insertVertex(ch, i);
+		getchar();
+	}
+
+	g.arre = (edge*)malloc(sizeof(edge)*m);
+	for (i = 0; i < m; i++) {
+		scanf("%c %c", &in, &out);
+		getchar();
+		insertDirectedEdge(in, out, i);
+	}
+}
+void insertVertex(char vname, int ind) {
+	g.arrv[ind].name = vname;
+	g.arrv[ind].inhead = (inc*)malloc(sizeof(inc));
+	g.arrv[ind].inhead->next = NULL;
+	g.arrv[ind].outhead = (inc*)malloc(sizeof(inc));
+	g.arrv[ind].outhead->next = NULL;
+	g.arrv[ind].in = 0;
+	//printf("make vertex ->name %c\n", g.arrv[ind].name);
+}
+void insertDirectedEdge(char uname, char wname, int ind) {
+	int u, w;
+	u = index(uname);
+	w = index(wname);
+	//insert to G edgelist
+	g.arre[ind].start = u;
+	g.arre[ind].end = w;
+	//printf("%d edge start is %c end is %c\n", ind + 1, g.arrv[u].name,
+		//g.arrv[w].name);
+	//insert to v
+	addFirst(g.arrv[index(uname)].outhead,ind);
+	//printf("insert incidence list of %d vertex\n", u);
+	//insert to w
+	addFirst(g.arrv[index(wname)].inhead, ind);
+	//printf("insert incidence list of %d vertex\n", w);
+	g.arrv[w].in++;
+}
+int index(char vname){
+	int i;
+	for (i = 0; i < n; i++) {
+		if (g.arrv[i].name == vname) return i;
+	}
+	return -1;
+}
+void addFirst(inc *head, int ind) {
+	inc *newI;
+	newI = (inc*)malloc(sizeof(inc));
+	newI->ind = ind;
+	newI->next = head->next;
+	
+	head->next = newI;
+
+}
+void topologicalSort() {
+	int i,t,u,w;
+	int *in;
+	inc *e;
+	Q = (int*)malloc(sizeof(n));
+	in = (int*)malloc(sizeof(n));
+	topOrder = (int*)malloc(sizeof(n + 1));
+	for (i = 0; i < n; i++) {
+		in[i] = g.arrv[i].in;
+		if (in[i] == 0) {
+			enqueue(i); //index i save
+		}
+	}
+
+	t = 1;
+	while (!isEmpty()) {
+		u = dequeue();
+		topOrder[t] = u;
+		t += 1;
+		
+		e = g.arrv[u].outhead->next;
+		while (e != NULL) {
+			//printf("repeat u's out incidence list\n");
+			//printf("%d ", e->ind);
+			w = g.arre[e->ind].end; //end vertex index
+			in[w]--;
+			//printf("in[w] is %d \n", in[w]);
+			if (in[w] == 0) {
+				enqueue(w);
+			}
+			//if (e->next == NULL) printf("NULL\n");
+			e = e->next;
+		}
+	}
+	if (t <= n) topOrder[0] = 0; //non DAG
+	else topOrder[0] = 1; //DAG
+	
+	//free(in);
+
+}
+int isEmpty() {
+	if (front == rear) return 1;
+	else return 0; 
+}
+void enqueue(int v) {
+	rear++;
+	rear %= n;
+	Q[rear] = v;
+	//printf("rear is %d enqueue vertex index is %d\n", rear, v);
+}
+int dequeue() {
+	int v;
+	front++;
+	front %= n;
+	v = Q[front];
+	Q[front] = 0;
+	//printf("dequeue vertex is %d\n",v);
+	return v;
+}
+void finish() {
+	inc *tmp,*pre;
+	int i;
+	for (i = 0; i < n; i++) {
+		tmp = g.arrv[i].outhead;
+		while (tmp != NULL) {
+			pre = tmp;
+			tmp = tmp->next;
+			free(pre);
+		}
+		free(g.arrv[i].outhead);
+		tmp = g.arrv[i].inhead;
+		while (tmp != NULL) {
+			pre = tmp;
+			tmp = tmp->next;
+			free(pre);
+		}
+		free(g.arrv[i].inhead);
+	}
+
+	free(Q);
+	free(topOrder);
+	free(g.arrv);
+	free(g.arre);
+}

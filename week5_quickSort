@@ -1,0 +1,117 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#pragma warning (disable:4996)
+int n;
+int *arr;
+int a, b;
+int find_pivot_index(int l, int r);
+int partition(int l, int r);
+void quickSort(int l, int r);
+void print();
+int main()
+{
+	int i;
+	scanf("%d", &n);
+	arr = (int*)malloc(sizeof(int)*n);
+	for (i = 0; i < n; i++) {
+		scanf("%d", arr + i);
+	}
+	quickSort(0, n-1);
+	print();
+	return 0;
+}
+int find_pivot_index(int l, int r) {
+	int i,j,cnt;
+	int tpivot[3] = { 0 };
+
+	srand(time(NULL));
+	
+	if (r - l < 2) return r;
+	for (i = 0; i < 3; i++) {
+		tpivot[i] = rand() % (r - l) + l;
+		for (j = 0; j < i; j++) { //중복체크
+			if (tpivot[i] == tpivot[j]) {
+				i--;
+				break;
+			}
+		}
+	}
+	for (i = 0; i < 3; i++) {//find median
+		for (j = 0, cnt = 0; j < 3; j++) {
+			if (tpivot[i] >= tpivot[j]) {
+				cnt++;
+			}
+		}
+		if (cnt == 2) { printf("[%d]\n", arr[i]); return i; }
+	}
+}
+int partition(int l, int r) {
+	int i = l, j = r - 1, k ,pivot;
+	int tmp;
+	//k = find_pivot_index(l, r);
+	k = r;
+	pivot = arr[k];
+	//tmp = arr[r];
+	//arr[r] = pivot;
+	//pivot = tmp;
+	while (i <= j) {
+		while (i <= j && arr[i] <= pivot) {
+			i++;
+		}
+		while (j >= i && arr[j] >= pivot) {
+			j--;
+		}
+		if (i < r && j > l && i < j ) {
+			tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+		}
+	
+	}
+	tmp = arr[i];
+	arr[i] = arr[k];
+	arr[k] = tmp;
+	/*
+	k = i;
+	if ( k > 1) {
+		a = k -1;
+		for(i = l; i < a;i ++){
+			if (arr[i] == pivot){
+				arr[i] = arr[a];
+				arr[a]=pivot;
+				a--;
+			}
+		}
+	}
+
+	if ( k < r-1){
+		b=k+1;
+		for(i = r; i > b;i--){
+			if (arr[i] == pivot){
+				arr[i] = arr[b];
+				arr[b] = pivot;
+				b++;
+			}
+		}
+	}
+	*/
+	
+	return i;
+}
+void quickSort(int l, int r) {
+	int k;
+	if (l < r) {
+		k = partition(l, r);
+		quickSort(l, k - 1);
+		quickSort(k + 1, r);
+
+	}
+	else return;
+}
+void print() {
+	int i;
+	for (i = 0; i < n; i++) {
+		printf(" %d", arr[i]);
+	}
+}

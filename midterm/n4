@@ -1,0 +1,41 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+#pragma warning(disable:4996)
+int main()
+{
+	int n, i,j,tmp;
+	int cnt = 0;
+	char *L1,*L2;
+	scanf("%d", &n);
+	getchar();
+	L1 = (char*)malloc(sizeof(char)*n);
+	L2 = (char*)malloc(sizeof(char)*n);
+
+	for (i = 0; i < n; i++) {
+		scanf("%c", L1 + i);
+		L2[i] = L1[i];
+	}
+	for (i = 0,j = n-1; i < j; ) {
+		while (L2[i] == 'R' && i < j) i++;
+		while ((L2[j] == 'G' || L2[j] == 'B') && j > i) j--;
+		tmp = L2[i];
+		L2[i] = L2[j];
+		L2[j] = tmp;
+	}
+	
+	for (j = n - 1; i < j; ) {
+		while (L2[i] == 'G' && i < j) i++;
+		while (L2[j] == 'B' && j > i) j--;
+		tmp = L2[i];
+		L2[i] = L2[j];
+		L2[j] = tmp;
+	}
+	
+	for (i = 0; i < n; i++) {
+		if (L1[i] == L2[i]) cnt++;
+	}
+
+	printf("%d", cnt);
+	return 0;
+}

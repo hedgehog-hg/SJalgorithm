@@ -1,0 +1,114 @@
+#include<stdio.h>
+#include<stdlib.h>
+#pragma warning (disable : 4996)
+typedef struct edge {
+	int start;
+	int end;
+}Edge;
+typedef struct vertex {
+	int ind;
+	struct adjList {
+		Edge *ind;
+		struct adjList *next;
+	}inc;
+}V;
+typedef struct adjList adj;
+typedef struct graph {
+	V *vlist;
+	Edge *elist;
+	int *visited;
+}G;
+void insert(V *vertex, Edge *edge);
+void DFS(G *g, V *u);
+int main()
+{
+	int n, m, s, i, swap,start,end;
+	G g;
+	adj *tmp;
+	scanf("%d%d%d", &n, &m, &s);
+	g.vlist = (V*)malloc(sizeof(V)*n);
+	g.visited = (int*)malloc(sizeof(int)*n);
+	g.elist = (Edge*)malloc(sizeof(Edge)*m);
+	for (i = 0; i < n; i++) {
+		g.visited[i] = 0;
+		g.vlist[i].ind = i; //vertex number - 1
+		g.vlist[i].inc.ind = NULL;
+		g.vlist[i].inc.next = NULL;
+	}
+	for (i = 0; i < m; i++) {
+		scanf("%d%d", &start, &end);
+		if (start > end) { swap = start; start = end; end = swap; }
+		g.elist[i].start = start-1;
+		g.elist[i].end = end - 1;
+		insert(&g.vlist[start - 1], &g.elist[i]);
+		insert(&g.vlist[end - 1], &g.elist[i]);
+	}
+
+	DFS(&g, &g.vlist[s - 1]);
+	//print vertex's adjacent list
+	/*for (i = 0; i < n; i++) {
+		tmp = g.vlist[i].inc.next;
+		printf("%d 's adjacent list :", i+1);
+		while (tmp != NULL) {
+			printf("%d %d" , tmp->ind->start+1, tmp->ind->end+1);
+			tmp = tmp->next;
+		}
+		printf("\n");
+	}*/
+	return 0;
+}
+void insert(V *vertex, Edge *edge) {
+	//vertex의 inc에서 삽입자리 찾아 삽입하기
+	//vertex [ind][next]->[ind][next]
+	adj *tmp=NULL,*pre=NULL;
+	adj *newA = NULL;
+	tmp = vertex->inc.next;
+	if (tmp == NULL)//insert to first 
+	{
+		vertex->inc.next = (adj*)malloc(sizeof(adj));
+		vertex->inc.next->ind = edge;
+		vertex->inc.next->next = tmp;
+	}
+	else 
+	{
+		while (tmp != NULL) {
+			if (tmp->ind->start == edge->start) {
+				if (tmp->ind->end > edge->end)break;
+			}
+			else if( tmp->ind->start > edge->start ) 
+			{
+				break;
+			}
+			pre = tmp;
+			tmp = tmp->next;
+		}
+		newA = (adj*)malloc(sizeof(adj));
+		newA->ind = edge;
+		if (pre == NULL) {
+			newA->next = vertex->inc.next;
+			vertex->inc.next = newA;
+		}
+		else {
+			newA->next = tmp;
+			pre->next = newA;
+		}
+	}
+}
+void DFS(G *g,V *u) {
+	adj *w = u->inc.next;
+	int ind;
+	g->visited[u->ind] = 1; //visit
+	printf("%d\n", u->ind + 1);
+	while (w != NULL) {
+		if (w->ind->end == u->ind) {
+			ind = w->ind->start;
+		}
+		else ind = w->ind->end;
+		if (g->visited[ind] == 0) //not visited
+		{
+			DFS(g, &g->vlist[ind]);
+		}
+		w = w->next;
+	}
+	return;
+}

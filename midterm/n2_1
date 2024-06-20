@@ -1,0 +1,18 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#pragma warning (disable: 4996 )
+int main()
+{
+	int n, i, j, sum;
+	char str[10];
+	scanf("%d", &n);
+	for (i = 0; i < n; i++) {
+		scanf("%s", str);
+		for (j = 0,sum =0; j < strlen(str); j++) {
+			sum += str[j];
+		}
+		printf("%d\n", sum);
+	}
+	return 0;
+}
